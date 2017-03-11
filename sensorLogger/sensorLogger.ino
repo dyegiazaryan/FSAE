@@ -1,7 +1,7 @@
 /*
 Layout:
  MOSI - pin 11
- MISO - pin 12
+ MISO - pin 1
  CLK - pin 13
  CS - pin 4 
 */
@@ -9,7 +9,7 @@ Layout:
 #include <SPI.h>
 #include <SD.h>
 
-const int chipSelect = 4;
+const int chipSelect = 8;
 
 void setup() {
   /* Setup Serial Coms
@@ -37,7 +37,7 @@ void loop(void){
      Writes to stdout for debugging.
   */	
   
-  dataString = "test"
+  char dataString[]= "test";
   File dataFile = SD.open("datalog.txt", FILE_WRITE);
 
   if (dataFile) {
