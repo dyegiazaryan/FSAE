@@ -36,7 +36,7 @@ void setup() {
 void loop(){
   /* Open and write
 
-     Writes dataString to the sdcard datalog.txt file, closes the file after every write.
+     Writes pressureString to the sdcard log.txt file, closes the file after every write.
      Writes to stdout for debugging.
   */
 
@@ -45,20 +45,21 @@ void loop(){
  
   String file_name;
   String current_file;
-
   file_name = "dataLog";
   current_file = file_name + count + ".txt";  
   
-  char dataString[]= "test";
+  float pressure = readSensorValues();
+  //String data = millis() + "," + pressure;
   
   // Creates new file in absence of existing files
   //current_file is passed to SD.open and gets made into a new file
   File dataFile = SD.open(current_file, FILE_WRITE);
  
   if (dataFile){
-    dataFile.println(dataString);
+    dataFile.print(millis());
+    dataFile.print(',');
+    dataFile.println(pressure);
     dataFile.close();
-    Serial.println(dataString);
   }
   
   else {
@@ -80,4 +81,12 @@ int countFiles(File f){
     entry.close();
     }
 }
+
+float readSensorValues(){
+  int sensorValue = analogRead(A0);
+  float voltage = sensorValue*(5.0/1023.0);
+  Serial.println(voltage);
+  return voltage;
+}
+
 
