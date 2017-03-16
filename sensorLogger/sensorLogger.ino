@@ -12,6 +12,10 @@ Layout:
 const int chipSelect = 8;
 int count;
 
+String file_name;
+String current_file;
+String header;
+
 void setup() {
   /* Setup Serial Coms
      
@@ -30,35 +34,42 @@ void setup() {
   Serial.println("card initialized.");
   
   count = countFiles(SD.open("/", FILE_READ));
+
+  file_name = "dL";
+  int newFileNum = count + 1;
+  current_file = file_name + newFileNum + ".csv";
+  header = "Time, P1, P2";
+  File dataFile = SD.open(current_file, FILE_WRITE);
+
   Serial.println(count);
+ 
+  if (dataFile){
+    dataFile.println(header);
+    dataFile.close();
+    }  
 }
 
 void loop(){
   /* Open and write
 
      Writes pressureString to the sdcard log.txt file, closes the file after every write.
-     Writes to stdout for debugging.
-  */
+  */  
+  float p1 = readSensor1();
+  float p2 = readSensor2();
 
-  
-  Serial.println(count);
- 
-  String file_name;
-  String current_file;
-  file_name = "dataLog";
-  current_file = file_name + count + ".txt";  
-  
-  float pressure = readSensorValues();
-  //String data = millis() + "," + pressure;
-  
   // Creates new file in absence of existing files
   //current_file is passed to SD.open and gets made into a new file
+
+  Serial.println(current_file);
+  
   File dataFile = SD.open(current_file, FILE_WRITE);
  
   if (dataFile){
     dataFile.print(millis());
     dataFile.print(',');
-    dataFile.println(pressure);
+    dataFile.print(p1, 4);
+    dataFile.print(',');
+    dataFile.println(p2, 4);
     dataFile.close();
   }
   
@@ -76,17 +87,30 @@ int countFiles(File f){
       return(file_count);
     }
     //File class has a method 'name()' that returns the name of one file
+    Serial.print("file name = ");
     Serial.println(entry.name());
-    file_count++;
+    if(!entry.isDirectory()) {
+      file_count++;
+    }
+    else {
+      Serial.println("Directory!");
+    }
     entry.close();
     }
 }
 
-float readSensorValues(){
-  int sensorValue = analogRead(A0);
-  float voltage = sensorValue*(5.0/1023.0);
-  Serial.println(voltage);
-  return voltage;
+float readSensor1(){
+  int sensorValue1 = analogRead(A0);
+  float v1 = sensorValue1*(5.0/1023.0);
+  Serial.println(v1);
+  return v1;
+}
+
+float readSensor2(){
+  int sensorValue2 = analogRead(A1);
+  float v2 = sensorValue2*(5.0/1023.0);
+  Serial.println(v2);
+  return v2;
 }
 
 
